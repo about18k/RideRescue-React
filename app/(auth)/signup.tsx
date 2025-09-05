@@ -4,6 +4,7 @@ import React, { useMemo, useState } from "react";
 import {
   Modal,
   Pressable,
+  Image as RNImage,
   ScrollView,
   StyleSheet,
   Text,
@@ -23,9 +24,9 @@ const ROLE_OPTIONS = [
 ] as const;
 
 const SHOP_TYPE_OPTIONS = [
-  "Repair and Vulcanizing", 
+  "Repair and Vulcanizing",
   "Repair only",
-  "Vulcanizing only"
+  "Vulcanizing only",
 ] as const;
 
 const SHOP_LIST = [
@@ -74,7 +75,6 @@ function Select({
   label: string;
   value: string | null;
   placeholder?: string;
-  // Accept readonly arrays to avoid TS2322 with `as const`
   options:
     | ReadonlyArray<string>
     | ReadonlyArray<{ label: string; value: string }>;
@@ -269,7 +269,20 @@ export default function Signup() {
 
   return (
     <View style={styles.screen}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        stickyHeaderIndices={[0]} // keep the first child (logo header) stuck to the top
+      >
+        {/* Sticky header with transparent background */}
+        <View style={styles.stickyHeader}>
+          <RNImage
+            source={require("../../assets/images/logo2.png")}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.brand}>RideRescue</Text>
+        </View>
+
         {/* 1) Always visible: Role dropdown */}
         <Section>
           <Select
@@ -337,7 +350,7 @@ export default function Signup() {
         {role === "shop" && (
           <>
             <Section>
-               <Select
+              <Select
                 label="Type of Shop"
                 value={shopType}
                 placeholder="Select type"
@@ -421,7 +434,13 @@ export default function Signup() {
             </Section>
 
             <Section title="Upload Certificates / Proof of Business">
-              <View style={{ flexDirection: "row", alignItems: "center", gap: spacing() }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: spacing(),
+                }}
+              >
                 <Pressable
                   onPress={() => setCertificateName("certificate.jpg")}
                   style={styles.btnLight}
@@ -471,7 +490,13 @@ export default function Signup() {
                 ))}
               </View>
 
-              <View style={{ flexDirection: "row", alignItems: "center", gap: spacing() }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: spacing(),
+                }}
+              >
                 <Text style={{ color: colors.text }}>Hours:</Text>
                 <View style={styles.timeBox}>
                   <TextInput
@@ -529,7 +554,8 @@ export default function Signup() {
           <View style={styles.dialog}>
             <Text style={styles.dialogTitle}>Reminder</Text>
             <Text style={styles.dialogText}>
-              Make sure you are in your Shop's Location to be able to Register your Shop.
+              Make sure you are in your Shop's Location to be able to Register
+              your Shop.
             </Text>
             <View style={styles.dialogRow}>
               <Pressable
@@ -563,6 +589,25 @@ export default function Signup() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
   container: { padding: spacing(3), gap: spacing(1.5) },
+
+  // 👇 Sticky header: transparent, only logo+text; text to the right of logo
+  stickyHeader: {
+    backgroundColor: "transparent", // no background
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: spacing(1),
+    // remove divider/shadow so it looks "no header bar"
+    borderBottomWidth: 0,
+    zIndex: 1,
+    elevation: 0,
+  },
+  logo: { width: 50, height: 50 },
+  brand: {
+    color: colors.text,
+    fontWeight: "800",
+    fontSize: 16,
+    marginLeft: 8, // ensure it sits to the right of the logo (works even if `gap` isn't supported)
+  },
 
   label: { color: colors.subtext, fontSize: 12, marginLeft: 4 },
 
@@ -653,8 +698,17 @@ const styles = StyleSheet.create({
   },
 
   /* Services & schedule */
-  smallTitle: { color: colors.text, fontWeight: "700", marginBottom: spacing(0.5) },
-  daysGrid: { flexDirection: "row", flexWrap: "wrap", gap: spacing(1.25), marginBottom: spacing(1) },
+  smallTitle: {
+    color: colors.text,
+    fontWeight: "700",
+    marginBottom: spacing(0.5),
+  },
+  daysGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing(1.25),
+    marginBottom: spacing(1),
+  },
   timeBox: {
     borderWidth: 1,
     borderColor: colors.inputBorder,
@@ -728,7 +782,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.line,
   },
-  dialogTitle: { color: colors.text, fontWeight: "800", fontSize: 16, marginBottom: spacing(1) },
+  dialogTitle: {
+    color: colors.text,
+    fontWeight: "800",
+    fontSize: 16,
+    marginBottom: spacing(1),
+  },
   dialogText: { color: colors.text, marginBottom: spacing(1.5) },
   dialogRow: { flexDirection: "row", justifyContent: "flex-end", gap: spacing(1) },
   btnGhost: {
